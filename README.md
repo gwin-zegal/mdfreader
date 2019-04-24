@@ -76,25 +76,25 @@ In the case of big files or lack of memory, you can optionally:
 * Compress data in memory with blosc with argument compression. Default compression level is 9.
 * Create a mdf dict with its metadata but without data (argument noDataLoading=True). Data will be read from file on demand by mdfreader methods (in general by getChannelData method)
 
-For great data visualization, dataPlugin for Veusz (from 1.16, http://home.gna.org/veusz/) is also existing ; please follow instructions from Veusz documentation and plugin file's header.
+For great data visualization, dataPlugin for Veusz (from 1.16, https://veusz.github.io/) is also existing ; please follow instructions from Veusz documentation and plugin file's header.
 
 Command example in ipython:
 ===========================
 ```python
     import mdfreader
     # loads whole mdf file content in yop mdf object.
-    yop=mdfreader.Mdf('NameOfFile')
+    yop = mdfreader.Mdf('NameOfFile')
     # you can print file content in ipython with a simple:
     yop
     # alternatively, for max speed and smaller memory footprint, read only few channels
-    yop=mdfreader.Mdf('NameOfFile', channelList=['channel1', 'channel2'], convertAfterRead=False)
+    yop = mdfreader.Mdf('NameOfFile', channelList=['channel1', 'channel2'], convertAfterRead=False)
     # also possible to keep data compressed for small memory footprint, using Blosc module
-    yop=mdfreader.Mdf('NameOfFile', compression=True)
+    yop = mdfreader.Mdf('NameOfFile', compression=True)
     # for interactive file exploration, possible to read the file but not its data to save memory
-    yop=mdfreader.Mdf('NameOfFile', noDataLoading=True) # channel data will be loaded from file if needed
+    yop = mdfreader.Mdf('NameOfFile', noDataLoading=True) # channel data will be loaded from file if needed
     # parsing xml metadata from mdf4.x for many channels can take more than just reading data.
     # You can reduce to minimum metadata reading with below argument (no source information, attachment, etc.) 
-    yop=mdfreader.Mdf('NameOfFile', metadata=0)  # 0: full, 2: minimal
+    yop = mdfreader.Mdf('NameOfFile', metadata=0)  # 0: full, 2: minimal
     # only for mdf4.x, you can search for the mdf key of a channel name that can have been recorded by different sources
     yop.get_channel_name4('channelName', 'source path or name')  # returns list of mdf keys
     # to yield one channel and keep its content in mdf object
@@ -104,7 +104,7 @@ Command example in ipython:
     # to get file mdf version
     yop.MDFVersionNumber
     # to get file structure or attachments, you can create a mdfinfo instance
-    info=mdfreader.MdfInfo()
+    info = mdfreader.MdfInfo()
     info.list_channels('NameOfFile') # returns only the list of channels
     info.read_info('NameOfFile') # complete file structure object
     yop.info # same class is stored in mdfreader class
@@ -132,7 +132,7 @@ Command example in ipython:
     # drops all the channels except the one in argument
     yop.keep_channels({'channel1','channel2','channel3'})
     # merge 2 files
-    yop2=mdfreader.Mdf('NameOfFile_2')
+    yop2 = mdfreader.Mdf('NameOfFile_2')
     yop.merge_mdf(yop2)
     # can write mdf file after modifications or creation from scratch
     # write4 and write3 also allow to convert file versions

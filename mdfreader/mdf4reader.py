@@ -1880,7 +1880,7 @@ def _linear_conversion(vector, cc_val):
     ----------------
     vector : numpy 1D array
         raw data to be converted to physical value
-    cc_val : mdfinfo4.info4 conversion block ('CCBlock') dict
+    cc_val : mdfinfo4.info4 conversion block ('CC') dict
 
     Returns
     -----------
@@ -1901,7 +1901,7 @@ def _rational_conversion(vector, cc_val):
     ----------------
     vector : numpy 1D array
         raw data to be converted to physical value
-    cc_val : mdfinfo4.info4 conversion block ('CCBlock') dict
+    cc_val : mdfinfo4.info4 conversion block ('CC') dict
 
     Returns
     -----------
@@ -1923,7 +1923,7 @@ def _formula_conversion(vector, formula):
     ----------------
     vector : numpy 1D array
         raw data to be converted to physical value
-    formula : mdfinfo4.info4 conversion block ('CCBlock') dict
+    formula : mdfinfo4.info4 conversion block ('CC') dict
 
     Returns
     -----------
@@ -1945,7 +1945,7 @@ def _value_to_value_table_without_interpolation_conversion(vector, cc_val):
     ----------------
     vector : numpy 1D array
         raw data to be converted to physical value
-    cc_val : mdfinfo4.info4 conversion block ('CCBlock') dict
+    cc_val : mdfinfo4.info4 conversion block ('CC') dict
 
     Returns
     -----------
@@ -1972,7 +1972,7 @@ def _value_to_value_table_with_interpolation_conversion(vector, cc_val):
     ----------------
     vector : numpy 1D array
         raw data to be converted to physical value
-    cc_val : mdfinfo4.info4 conversion block ('CCBlock') dict
+    cc_val : mdfinfo4.info4 conversion block ('CC') dict
 
     Returns
     -----------
@@ -1994,7 +1994,7 @@ def _value_range_to_value_table_conversion(vector, cc_val):
     ----------------
     vector : numpy 1D array
         raw data to be converted to physical value
-    cc_val : mdfinfo4.info4 conversion block ('CCBlock') dict
+    cc_val : mdfinfo4.info4 conversion block ('CC') dict
 
     Returns
     -----------
@@ -2022,8 +2022,8 @@ def _value_to_text_conversion(vector, cc_val, cc_ref):
     ----------------
     vector : numpy 1D array
         raw data to be converted to physical value
-    cc_val : cc_val from mdfinfo4.info4 conversion block ('CCBlock') dict
-    cc_ref : cc_ref from mdfinfo4.info4 conversion block ('CCBlock') dict
+    cc_val : cc_val from mdfinfo4.info4 conversion block ('CC') dict
+    cc_ref : cc_ref from mdfinfo4.info4 conversion block ('CC't
 
     Returns
     -----------
@@ -2081,8 +2081,8 @@ def _value_range_to_text_conversion(vector, cc_val, cc_ref):
     ----------------
     vector : numpy 1D array
         raw data to be converted to physical value
-    cc_val : cc_val from mdfinfo4.info4 conversion block ('CCBlock') dict
-    cc_ref : cc_ref from mdfinfo4.info4 conversion block ('CCBlock') dict
+    cc_val : cc_val from mdfinfo4.info4 conversion block ('CC') dict
+    cc_ref : cc_ref from mdfinfo4.info4 conversion block ('CC') dict
 
     Returns
     -----------
@@ -2133,8 +2133,8 @@ def _text_to_value_conversion(vector, cc_val, cc_ref):
     ----------------
     vector : numpy 1D array
         raw data to be converted to physical value
-    cc_val : cc_val from mdfinfo4.info4 conversion block ('CCBlock') dict
-    cc_ref : cc_ref from mdfinfo4.info4 conversion block ('CCBlock') dict
+    cc_val : cc_val from mdfinfo4.info4 conversion block ('CC') dict
+    cc_ref : cc_ref from mdfinfo4.info4 conversion block ('CC') dict
 
     Returns
     -----------
@@ -2159,7 +2159,7 @@ def _text_to_text_conversion(vector, cc_ref):
     ----------------
     vector : numpy 1D array
         raw data to be converted to physical value
-    cc_ref : cc_ref from mdfinfo4.info4 conversion block ('CCBlock') dict
+    cc_ref : cc_ref from mdfinfo4.info4 conversion block ('CC') dict
 
     Returns
     -----------

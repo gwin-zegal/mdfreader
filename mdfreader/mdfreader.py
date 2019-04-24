@@ -105,11 +105,11 @@ class MdfInfo(dict):
     """ MDFINFO is a class gathering information from block headers in a MDF (Measure Data Format) file
         Structure is nested dicts. Primary key is Block type, then data group, channel group and channel number.
         Examples of dicts
-    - mdfinfo['HDBlock'] header block
-    - mdfinfo['DGBlock'][dataGroup] Data Group block
-    - mdfinfo['CGBlock'][dataGroup][channelGroup] Channel Group block
-    - mdfinfo['CNBlock'][dataGroup][channelGroup][channel] Channel block including text blocks for comment and identifier
-    - mdfinfo['CCBlock'][dataGroup][channelGroup][channel] Channel conversion information
+    - mdfinfo['HD'] header block
+    - mdfinfo['DG'][dataGroup] Data Group block
+    - mdfinfo['CG'][dataGroup][channelGroup] Channel Group block
+    - mdfinfo['CN'][dataGroup][channelGroup][channel] Channel block including text blocks for comment and identifier
+    - mdfinfo['CC'][dataGroup][channelGroup][channel] Channel conversion information
 
     Attributes
     --------------

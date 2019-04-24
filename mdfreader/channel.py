@@ -317,13 +317,13 @@ class Channel4(object):
         CABlock object from mdfinfo4 module
         """
         try:
-            return info['CN'][self.dataGroup][self.channelGroup][self.channelNumber]['CABlock']
+            return info['CN'][self.dataGroup][self.channelGroup][self.channelNumber]['CA']
         except KeyError:
             return None
 
     def is_ca_block(self, info):
         try:
-            info['CN'][self.dataGroup][self.channelGroup][self.channelNumber]['CABlock']
+            info['CN'][self.dataGroup][self.channelGroup][self.channelNumber]['CA']
             return True
         except KeyError:
             return False
@@ -411,8 +411,8 @@ class Channel4(object):
             if self.type in (1, 2):  # array channel
                 n_bytes *= self.ca_block(info)['PNd']
                 block = self.ca_block(info)
-                while 'CABlock' in block:  # nested array
-                    block = block['CABlock']
+                while 'CA' in block:  # nested array
+                    block = block['CA']
                     n_bytes *= block['PNd']
             if self.type == 3:  # CAN channel
                 if self.name == 'ms':
@@ -472,16 +472,16 @@ class Channel4(object):
         if self.type == 4:  # Invalid bit channel
             data_format = '{}V'.format(self.nBytes)
         elif info['CN'][self.dataGroup][self.channelGroup][self.channelNumber]['cn_composition'] and \
-                'CABlock' in info['CN'][self.dataGroup][self.channelGroup][self.channelNumber]:  # channel array
-            ca_block = info['CN'][self.dataGroup][self.channelGroup][self.channelNumber]['CABlock']
+                'CA' in info['CN'][self.dataGroup][self.channelGroup][self.channelNumber]:  # channel array
+            ca_block = info['CN'][self.dataGroup][self.channelGroup][self.channelNumber]['CA']
             endian, data_format = array_format4(
                 info['CN'][self.dataGroup][self.channelGroup][self.channelNumber]['cn_data_type'],
                 info['CN'][self.dataGroup][self.channelGroup][self.channelNumber]['cn_bit_count'] // 8)
             # calculates total array size in bytes
             array_desc = ca_block['ca_dim_size']
             Block = ca_block
-            while 'CABlock' in Block:  # nested array
-                Block = Block['CABlock']
+            while 'CA' in Block:  # nested array
+                Block = Block['CA']
                 if isinstance(array_desc, list):
                     array_desc.append(Block['ca_dim_size'])
                 else:
@@ -799,11 +799,11 @@ class Channel4(object):
         self.channelGroup = channel_group
         self.type = 0
         if info['CN'][data_group][channel_group][channel_number]['cn_composition'] and \
-                'CABlock' in info['CN'][data_group][channel_group][channel_number]:
+                'CA' in info['CN'][data_group][channel_group][channel_number]:
             # channel array
             self.type = 1
-            block = info['CN'][self.dataGroup][self.channelGroup][self.channelNumber]['CABlock']
-            if 'CABlock' in block:  # nested array
+            block = info['CN'][self.dataGroup][self.channelGroup][self.channelNumber]['CA']
+            if 'CA' in block:  # nested array
                 self.type = 2
         self.nBytes = self.calc_bytes(info)
         self.byteOffset = self.calc_byte_offset(info)
@@ -1196,16 +1196,16 @@ class Channel3:
         record_id_number : int
             Number of record ID, each one Byte
         """
-        self.name = info['CNBlock'][data_group][channel_group][channel_number]['signalName']
+        self.name = info['CN'][data_group][channel_group][channel_number]['signalName']
         self.channelNumber = channel_number
-        self.signalDataType = info['CNBlock'][data_group][channel_group][channel_number]['signalDataType']
+        self.signalDataType = info['CN'][data_group][channel_group][channel_number]['signalDataType']
         if self.signalDataType not in (7, 8):
             numeric = True
         else:
             numeric = False
-        self.bitCount = info['CNBlock'][data_group][channel_group][channel_number]['numberOfBits']
-        byte_order = info['IDBlock']['ByteOrder']
-        self.posBitBeg = info['CNBlock'][data_group][channel_group][channel_number]['numberOfTheFirstBits']
+        self.bitCount = info['CN'][data_group][channel_group][channel_number]['numberOfBits']
+        byte_order = info['ID']['ByteOrder']
+        self.posBitBeg = info['CN'][data_group][channel_group][channel_number]['numberOfTheFirstBits']
         self.posBitEnd = self.posBitBeg + self.bitCount
         self.byteOffset = self.posBitBeg // 8
         self.bitOffset = self.posBitBeg % 8
@@ -1220,16 +1220,16 @@ class Channel3:
             self.bit_masking_needed = True
         else:
             self.bit_masking_needed = False
-        self.channelType = info['CNBlock'][data_group][channel_group][channel_number]['channelType']
-        if 'physicalUnit' in info['CCBlock'][data_group][channel_group][channel_number]:
-            self.unit = info['CCBlock'][data_group][channel_group][channel_number]['physicalUnit']
+        self.channelType = info['CN'][data_group][channel_group][channel_number]['channelType']
+        if 'physicalUnit' in info['CC'][data_group][channel_group][channel_number]:
+            self.unit = info['CC'][data_group][channel_group][channel_number]['physicalUnit']
         else:
             self.unit = ''
-        if 'signalDescription' in info['CNBlock'][data_group][channel_group][channel_number]:
-            self.desc = info['CNBlock'][data_group][channel_group][channel_number]['signalDescription']
+        if 'signalDescription' in info['CN'][data_group][channel_group][channel_number]:
+            self.desc = info['CN'][data_group][channel_group][channel_number]['signalDescription']
         else:
             self.desc = ''
-        self.conversion = info['CCBlock'][data_group][channel_group][channel_number]
+        self.conversion = info['CC'][data_group][channel_group][channel_number]
 
     def __str__(self):
         output = [self.channelNumber, ' ', self.name, ' ', self.signalDataType, ' ',

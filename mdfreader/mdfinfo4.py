@@ -1159,8 +1159,8 @@ class CABlock(dict):
                 self['ca_axis'] = _mdf_block_read(fid, _LINK, self['ca_ndim'] * 3)
             # nested arrays
             if self['ca_composition']:
-                self['CABlock'] = CABlock()
-                self['CABlock'].read(fid, self['ca_composition'])
+                self['CA'] = CABlock()
+                self['CA'].read(fid, self['ca_composition'])
 
     def load(self, byte_offset_base):
         self['block_length'] = 48 + 8 * self['ndim']
@@ -1811,8 +1811,8 @@ class Info4(dict):
                     fid.seek(self['CN'][dg][cg][cn]['cn_composition'])
                     id = fid.read(4)
                     if id in ('##CA', b'##CA'):
-                        self['CN'][dg][cg][cn]['CABlock'] = CABlock()
-                        self['CN'][dg][cg][cn]['CABlock'].read(fid, self['CN'][dg][cg][cn]['cn_composition'])
+                        self['CN'][dg][cg][cn]['CA'] = CABlock()
+                        self['CN'][dg][cg][cn]['CA'].read(fid, self['CN'][dg][cg][cn]['cn_composition'])
                     elif id in ('##CN', b'##CN'):
                         self['CN'][dg][cg][cn]['CN'] = {}
                         temp = CNBlock()
@@ -1858,8 +1858,8 @@ class Info4(dict):
                         fid.seek(self['CN'][dg][cg][cn]['cn_composition'])
                         id = fid.read(4)
                         if id in ('##CA', b'##CA'):
-                            self['CN'][dg][cg][cn]['CABlock'] = CABlock()
-                            self['CN'][dg][cg][cn]['CABlock'].read(fid, self['CN'][dg][cg][cn]['cn_composition'])
+                            self['CN'][dg][cg][cn]['CA'] = CABlock()
+                            self['CN'][dg][cg][cn]['CA'].read(fid, self['CN'][dg][cg][cn]['cn_composition'])
                         elif id in ('##CN', b'##CN'):
                             self['CN'][dg][cg][cn]['CN'] = {}
                             temp = CNBlock()

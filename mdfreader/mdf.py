@@ -225,8 +225,8 @@ class MdfSkeleton(dict):
         if info is not None:  # axis from CABlock
             ca_block = info
             axis = []
-            while 'CABlock' in ca_block:
-                ca_block = ca_block['CABlock']
+            while 'CA' in ca_block:
+                ca_block = ca_block['CA']
                 if 'ca_axis_value' in ca_block:
                     if type(ca_block['ca_dim_size']) is list:
                         index = 0

@@ -62,21 +62,21 @@ class ImportPlugin(MdfInfo):
 
         if info.mdfversion < 400:
             f = ''
-            f += 'Time: ' + info['HDBlock']['Date'] + ' '
-            f += info['HDBlock']['Time'] + '\n'
-            f += 'Author: ' + info['HDBlock']['Author'] + '\n'
-            f += 'Organisation: ' + info['HDBlock']['Organization'] + '\n'
-            f += 'Project Name: ' + info['HDBlock']['ProjectName'] + '\n'
-            f += 'Subject: ' + info['HDBlock']['Subject'] + '\n' + 'Channel List:\n'
+            f += 'Time: ' + info['HD']['Date'] + ' '
+            f += info['HD']['Time'] + '\n'
+            f += 'Author: ' + info['HD']['Author'] + '\n'
+            f += 'Organisation: ' + info['HD']['Organization'] + '\n'
+            f += 'Project Name: ' + info['HD']['ProjectName'] + '\n'
+            f += 'Subject: ' + info['HD']['Subject'] + '\n' + 'Channel List:\n'
         else:
             from time import gmtime, strftime
-            fileDateTime = gmtime(info['HDBlock']['hd_start_time_ns'] / 1000000000)
+            fileDateTime = gmtime(info['HD']['hd_start_time_ns'] / 1000000000)
             date = strftime('%Y-%m-%d', fileDateTime)
             time = strftime('%H:%M:%S', fileDateTime)
             f = ''
             f += 'Date Time: ' + date + '  ' + time + '\n'
-            if 'Comment' in info['HDBlock']:
-                Comment = info['HDBlock']['Comment']
+            if 'Comment' in info['HD']:
+                Comment = info['HD']['Comment']
                 if 'author' in Comment:
                     f += 'Author: ' + Comment['author'] + '\n'
                 if 'department' in Comment:

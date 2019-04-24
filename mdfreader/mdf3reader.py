@@ -53,7 +53,7 @@ def _linear_conversion(data, conversion):  # 0 Parametric, Linear: Physical =Int
     ----------------
     data : numpy 1D array
         raw data to be converted to physical value
-    conversion : mdfinfo3.info3 conversion block ('CCBlock') dict
+    conversion : mdfinfo3.info3 conversion block ('CC') dict
 
     Returns
     -----------
@@ -72,7 +72,7 @@ def _tab_interp_conversion(data, conversion):  # 1 Tabular with interpolation
     ----------------
     data : numpy 1D array
         raw data to be converted to physical value
-    conversion : mdfinfo3.info3 conversion block ('CCBlock') dict
+    conversion : mdfinfo3.info3 conversion block ('CC') dict
 
     Returns
     -----------
@@ -90,7 +90,7 @@ def _tab_conversion(data, conversion):  # 2 Tabular
     ----------------
     data : numpy 1D array
         raw data to be converted to physical value
-    conversion : mdfinfo3.info3 conversion block ('CCBlock') dict
+    conversion : mdfinfo3.info3 conversion block ('CC') dict
 
     Returns
     -----------
@@ -109,7 +109,7 @@ def _polynomial_conversion(data, conversion):  # 6 Polynomial
     ----------------
     data : numpy 1D array
         raw data to be converted to physical value
-    conversion : mdfinfo3.info3 conversion block ('CCBlock') dict
+    conversion : mdfinfo3.info3 conversion block ('CC') dict
 
     Returns
     -----------
@@ -126,7 +126,7 @@ def _exponential_conversion(data, conversion):  # 7 Exponential
     ----------------
     data : numpy 1D array
         raw data to be converted to physical value
-    conversion : mdfinfo3.info3 conversion block ('CCBlock') dict
+    conversion : mdfinfo3.info3 conversion block ('CC') dict
 
     Returns
     -----------
@@ -149,7 +149,7 @@ def _log_conversion(data, conversion):  # 8 Logarithmic
     ----------------
     data : numpy 1D array
         raw data to be converted to physical value
-    conversion : mdfinfo3.info3 conversion block ('CCBlock') dict
+    conversion : mdfinfo3.info3 conversion block ('CC') dict
 
     Returns
     -----------
@@ -172,7 +172,7 @@ def _rational_conversion(data, conversion):  # 9 rational
     ----------------
     data : numpy 1D array
         raw data to be converted to physical value
-    conversion : mdfinfo3.info3 conversion block ('CCBlock') dict
+    conversion : mdfinfo3.info3 conversion block ('CC') dict
 
     Returns
     -----------
@@ -189,7 +189,7 @@ def _formula_conversion(data, conversion):  # 10 Text Formula
     ----------------
     data : numpy 1D array
         raw data to be converted to physical value
-    conversion : mdfinfo3.info3 conversion block ('CCBlock') dict
+    conversion : mdfinfo3.info3 conversion block ('CC') dict
 
     Returns
     -----------
@@ -222,7 +222,7 @@ def _text_table_conversion(data, conversion):  # 11 Text table
     ----------------
     data : numpy 1D array
         raw data to be converted to physical value
-    conversion : mdfinfo3.info3 conversion block ('CCBlock') dict
+    conversion : mdfinfo3.info3 conversion block ('CC') dict
 
     Returns
     -----------
@@ -241,7 +241,7 @@ def _text_range_table_conversion(data, conversion):  # 12 Text range table
     ----------------
     data : numpy 1D array
         raw data to be converted to physical value
-    conversion : mdfinfo3.info3 conversion block ('CCBlock') dict
+    conversion : mdfinfo3.info3 conversion block ('CC') dict
 
     Returns
     -----------
@@ -380,17 +380,17 @@ class Record(list):
         info : mdfinfo3.info3 class
 
         """
-        self.recordIDnumber = info['DGBlock'][self.dataGroup]['numberOfRecordIDs']
-        self.recordID = info['CGBlock'][self.dataGroup][self.channelGroup]['recordID']
-        self.CGrecordLength = info['CGBlock'][self.dataGroup][self.channelGroup]['dataRecordSize']
-        self.numberOfRecords = info['CGBlock'][self.dataGroup][self.channelGroup]['numberOfRecords']
+        self.recordIDnumber = info['DG'][self.dataGroup]['numberOfRecordIDs']
+        self.recordID = info['CG'][self.dataGroup][self.channelGroup]['recordID']
+        self.CGrecordLength = info['CG'][self.dataGroup][self.channelGroup]['dataRecordSize']
+        self.numberOfRecords = info['CG'][self.dataGroup][self.channelGroup]['numberOfRecords']
         self.dataBlockLength = self.CGrecordLength * self.numberOfRecords
         if self.recordIDnumber > 0:  # record ID existing at beginning of record
             self.dataRecordName.append('RecordID{}'.format(self.channelGroup))
             self.numpyDataRecordFormat.append('uint8')
             self.dataBlockLength = (self.CGrecordLength + 1) * self.numberOfRecords
         embedding_channel = None
-        for channelNumber in range(info['CGBlock'][self.dataGroup][self.channelGroup]['numberOfChannels']):
+        for channelNumber in range(info['CG'][self.dataGroup][self.channelGroup]['numberOfChannels']):
             channel = Channel3(info, self.dataGroup, self.channelGroup, channelNumber, self.recordIDnumber)
             if self.master['number'] is None or channel.channelType == 1:  # master channel found
                 self.master['name'] = channel.name
@@ -885,51 +885,51 @@ class Mdf3(MdfSkeleton):
         # reads metadata
         if not self._noDataLoading:
             try:
-                comment = info['HDBlock']['TXBlock']
+                comment = info['HD']['TX']
             except:
                 comment = ''
             # converts date to be compatible with ISO8601
-            day, month, year = info['HDBlock']['Date'].split(':')
+            day, month, year = info['HD']['Date'].split(':')
             ddate = '-'.join([year, month, day])
-            self.add_metadata(author=info['HDBlock']['Author'],
-                              organisation=info['HDBlock']['Organization'],
-                              project=info['HDBlock']['ProjectName'],
-                              subject=info['HDBlock']['Subject'], comment=comment,
-                              date=ddate, time=info['HDBlock']['Time'])
+            self.add_metadata(author=info['HD']['Author'],
+                              organisation=info['HD']['Organization'],
+                              project=info['HD']['ProjectName'],
+                              subject=info['HD']['Subject'], comment=comment,
+                              date=ddate, time=info['HD']['Time'])
 
-        data_groups = info['DGBlock']  # parse all data groups
+        data_groups = info['DG']  # parse all data groups
         if self._noDataLoading and channel_list is not None:
             data_groups = [self[channel][idField][0] for channel in channel_list]
 
         # Read data from file
         for dataGroup in data_groups:
             channel_set = channel_set_file
-            if info['DGBlock'][dataGroup]['numberOfChannelGroups'] > 0 and \
+            if info['DG'][dataGroup]['numberOfChannelGroups'] > 0 and \
                     (channel_set is None or
                      len(channel_set & info['ChannelNamesByDG'][dataGroup]) > 0):  # data exists
                 if minimal > 1 and not self._noDataLoading:  # load CG, CN and CC block info
                     info.read_cg_block(info.fid, dataGroup, minimal=minimal)
                 # Pointer to data block
-                pointer_to_data = info['DGBlock'][dataGroup]['pointerToDataRecords']
+                pointer_to_data = info['DG'][dataGroup]['pointerToDataRecords']
 
-                if 'dataClass' not in info['DGBlock'][dataGroup]:
+                if 'dataClass' not in info['DG'][dataGroup]:
                     buf = DATA(info.fid, pointer_to_data)
-                    for channelGroup in range(info['DGBlock'][dataGroup]['numberOfChannelGroups']):
+                    for channelGroup in range(info['DG'][dataGroup]['numberOfChannelGroups']):
                         temp = Record(dataGroup, channelGroup)  # create record class
                         temp.load_info(info)  # load all info related to record
 
                         if temp.numberOfRecords != 0:  # continue if there are at least some records
                             buf.add_record(temp)
                     if self._noDataLoading:
-                        self.info['DGBlock'][dataGroup]['dataClass'] = buf
+                        self.info['DG'][dataGroup]['dataClass'] = buf
                 else:
-                    buf = self.info['DGBlock'][dataGroup]['dataClass']
+                    buf = self.info['DG'][dataGroup]['dataClass']
 
                 buf.read(channel_set, self.fileName)  # reads datablock potentially containing several channel groups
 
                 channel_groups = buf
                 if self._noDataLoading and channel_list is not None:
-                    channel_groups = [info['CGBlock'][dataGroup][self[channel][idField][1]]['recordID']
+                    channel_groups = [info['CG'][dataGroup][self[channel][idField][1]]['recordID']
                                       for channel in channel_list]
 
                 for recordID in channel_groups:

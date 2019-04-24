@@ -1616,7 +1616,7 @@ class Info4(dict):
             file identifier
         channel_name_list : bool
             Flag to reads only channel blocks for listChannels4 method
-        minimal: falg
+        minimal: flag
             to activate minimum content reading for raw data fetching
         """
         self['ChannelNamesByDG'] = {}
@@ -1648,7 +1648,7 @@ class Info4(dict):
             data group number
         channel_name_list : bool
             Flag to reads only channel blocks for listChannels4 method
-        minimal: falg
+        minimal: flag
             to activate minimum content reading for raw data fetching
         """
         if self['DG'][dg]['dg_cg_first']:
@@ -1774,7 +1774,6 @@ class Info4(dict):
         vlsd = False
         self['CN'][dg][cg][cn] = {}
         self['CC'][dg][cg][cn] = {}
-        self['CN'][dg][cg][cn] = {}
         temp = CNBlock()
         temp.read_cn(fid=fid, pointer=self['CG'][dg][cg]['cg_cn_first'])
         if temp is not None:

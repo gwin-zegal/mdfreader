@@ -426,7 +426,7 @@ class Channel4(object):
                     n_bytes = 1
             return n_bytes
         else:
-            return info['CG'][self.dataGroup][self.channelGroup]['cg_invalid_bytes']
+            return info['CG'][self.dataGroup][self.channelGroup]['cg_inval_bytes']
 
     def little_endian(self, info):
         """ check if channel is little endian

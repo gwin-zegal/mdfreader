@@ -139,13 +139,13 @@ class Info3(dict):
 
         # Read Data Group blocks (DGBlock) information
         # Get pointer to first Data Group block
-        dg_pointer = self['HD']['pointerToFirstDGBlock']
+        dg_pointer = self['HD']['hd_dg_first']
         for dg in range(self['HD']['numberOfDataGroups']):
 
             # Read data Data Group block info into structure
             self['DG'][dg] = read_dg_block(fid, dg_pointer)
             # Get pointer to next Data Group block
-            dg_pointer = self['DG'][dg]['pointerToNextDGBlock']
+            dg_pointer = self['DG'][dg]['dg_dg_next']
             self['ChannelNamesByDG'][dg] = set()
             if minimal < 2:
                 self.read_cg_block(fid, dg, minimal)
@@ -170,7 +170,7 @@ class Info3(dict):
         # Read Channel Group block (CGBlock) information - offset set already
 
         # Read data Channel Group block info into structure
-        cg_pointer = self['DG'][dg]['pointerToNextCGBlock']
+        cg_pointer = self['DG'][dg]['dg_cg_next']
         self['CG'][dg] = dict()
         self['CN'][dg] = dict()
         self['CC'][dg] = dict()
@@ -178,14 +178,14 @@ class Info3(dict):
             self['CN'][dg][cg] = dict()
             self['CC'][dg][cg] = dict()
             self['CG'][dg][cg] = read_cg_block(fid, cg_pointer)
-            cg_pointer = self['CG'][dg][cg]['pointerToNextCGBlock']
+            cg_pointer = self['CG'][dg][cg]['cg_cg_next']
 
             # Read data Text block info into structure
             self['CG'][dg][cg]['TX'] = \
                 read_tx_block(fid, self['CG'][dg][cg]['pointerToChannelGroupCommentText'])
 
             # Get pointer to next first Channel block
-            cn_pointer = self['CG'][dg][cg]['pointerToFirstCNBlock']
+            cn_pointer = self['CG'][dg][cg]['cg_cn_next']
 
             # For each Channel
             for channel in range(self['CG'][dg][cg]['numberOfChannels']):
@@ -193,7 +193,7 @@ class Info3(dict):
                 # Read data Channel block info into structure
 
                 self['CN'][dg][cg][channel] = read_cn_block(fid, cn_pointer)
-                cn_pointer = self['CN'][dg][cg][channel]['pointerToNextCNBlock']
+                cn_pointer = self['CN'][dg][cg][channel]['cn_cn_next']
 
                 # Read Channel text blocks (TXBlock)
 
@@ -333,18 +333,18 @@ class Info3(dict):
 
         # Read Data Group blocks (DGBlock) information
         # Get pointer to first Data Group block
-        dg_pointer = self['HD']['pointerToFirstDGBlock']
+        dg_pointer = self['HD']['hd_dg_first']
         for dataGroup in range(self['HD']['numberOfDataGroups']):
 
             # Read data Data Group block info into structure
             self['DG'][dataGroup] = read_dg_block(fid, dg_pointer)
             # Get pointer to next Data Group block
-            dg_pointer = self['DG'][dataGroup]['pointerToNextDGBlock']
+            dg_pointer = self['DG'][dataGroup]['dg_dg_next']
 
             # Read Channel Group block (CGBlock) information - offset set already
 
             # Read data Channel Group block info into structure
-            cg_pointer = self['DG'][dataGroup]['pointerToNextCGBlock']
+            cg_pointer = self['DG'][dataGroup]['dg_cg_next']
             self['CG'][dataGroup] = {}
             self['CN'][dataGroup] = {}
             self['CC'][dataGroup] = {}
@@ -352,10 +352,10 @@ class Info3(dict):
                 self['CN'][dataGroup][channelGroup] = {}
                 self['CC'][dataGroup][channelGroup] = {}
                 self['CG'][dataGroup][channelGroup] = read_cg_block(fid, cg_pointer)
-                cg_pointer = self['CG'][dataGroup][channelGroup]['pointerToNextCGBlock']
+                cg_pointer = self['CG'][dataGroup][channelGroup]['cg_cg_next']
 
                 # Get pointer to next first Channel block
-                cn_pointer = self['CG'][dataGroup][channelGroup]['pointerToFirstCNBlock']
+                cn_pointer = self['CG'][dataGroup][channelGroup]['cg_cn_next']
 
                 names_set = set()
                 # For each Channel
@@ -365,7 +365,7 @@ class Info3(dict):
                     # self.numberOfChannels += 1
                     # Read data Channel block info into structure
                     self['CN'][dataGroup][channelGroup][channel] = read_cn_block(fid, cn_pointer)
-                    cn_pointer = self['CN'][dataGroup][channelGroup][channel]['pointerToNextCNBlock']
+                    cn_pointer = self['CN'][dataGroup][channelGroup][channel]['cn_cn_next']
 
                     # Read Channel text blocks (TXBlock)
 
@@ -413,27 +413,27 @@ def read_hd_block(fid, pointer, version=0):
         temp = dict()
         fid.seek(pointer)
         if version < 320:
-            (temp['BlockType'],
+            (temp['id'],
              temp['BlockSize'],
-             temp['pointerToFirstDGBlock'],
+             temp['hd_dg_first'],
              temp['pointerToTXBlock'],
              temp['pointerToPRBlock'],
              temp['numberOfDataGroups'],
-             temp['Date'],
-             temp['Time'],
+             temp['hd_start_time_ns'],
+             temp['hd_tz_offset_min'],
              temp['Author'],
              temp['Organization'],
              temp['ProjectName'],
              temp['Subject']) = unpack('<2sH3IH10s8s32s32s32s32s', fid.read(164))
         else:
-            (temp['BlockType'],
+            (temp['id'],
              temp['BlockSize'],
-             temp['pointerToFirstDGBlock'],
+             temp['hd_dg_first'],
              temp['pointerToTXBlock'],
              temp['pointerToPRBlock'],
              temp['numberOfDataGroups'],
-             temp['Date'],
-             temp['Time'],
+             temp['hd_start_time_ns'],
+             temp['hd_tz_offset_min'],
              temp['Author'],
              temp['Organization'],
              temp['ProjectName'],
@@ -443,8 +443,8 @@ def read_hd_block(fid, pointer, version=0):
              temp['TimeQualityClass'],
              temp['TimeIdentification']) = unpack('<2sH3IH10s8s32s32s32s32sQ2H32s', fid.read(208))
             temp['TimeIdentification'] = temp['TimeIdentification'].rstrip(b'\x00').decode('latin1', 'replace')
-        temp['Date'] = temp['Date'].rstrip(b'\x00').decode('latin1', 'replace')
-        temp['Time'] = temp['Time'].rstrip(b'\x00').decode('latin1', 'replace')
+        temp['hd_start_time_ns'] = temp['hd_start_time_ns'].rstrip(b'\x00').decode('latin1', 'replace')
+        temp['hd_tz_offset_min'] = temp['hd_tz_offset_min'].rstrip(b'\x00').decode('latin1', 'replace')
         temp['Author'] = temp['Author'].rstrip(b'\x00').decode('latin1', 'replace')
         temp['Organization'] = temp['Organization'].rstrip(b'\x00').decode('latin1', 'replace')
         temp['ProjectName'] = temp['ProjectName'].rstrip(b'\x00').decode('latin1', 'replace')
@@ -459,10 +459,10 @@ def read_dg_block(fid, pointer):
     if pointer != 0 and pointer is not None:
         temp = dict()
         fid.seek(pointer)
-        (temp['BlockType'],
+        (temp['id'],
          temp['BlockSize'],
-         temp['pointerToNextDGBlock'],
-         temp['pointerToNextCGBlock'],
+         temp['dg_dg_next'],
+         temp['dg_cg_next'],
          temp['reserved'],
          temp['pointerToDataRecords'],
          temp['numberOfChannelGroups'],
@@ -477,10 +477,10 @@ def read_cg_block(fid, pointer):
     if pointer != 0 and pointer is not None:
         temp = dict()
         fid.seek(pointer)
-        (temp['BlockType'],
+        (temp['id'],
          temp['BlockSize'],
-         temp['pointerToNextCGBlock'],
-         temp['pointerToFirstCNBlock'],
+         temp['cg_cg_next'],
+         temp['cg_cn_next'],
          temp['pointerToChannelGroupCommentText'],
          temp['recordID'],
          temp['numberOfChannels'],
@@ -496,9 +496,9 @@ def read_cn_block(fid, pointer):
     if pointer != 0 and pointer is not None:
         temp = dict()
         fid.seek(pointer)
-        (temp['BlockType'],
+        (temp['id'],
          temp['BlockSize'],
-         temp['pointerToNextCNBlock'],
+         temp['cn_cn_next'],
          temp['pointerToConversionFormula'],
          temp['pointerToCEBlock'],
          temp['pointerToCDBlock'],
@@ -529,7 +529,7 @@ def read_cc_block(fid, pointer):
     if pointer != 0 and pointer is not None:
         temp = dict()
         fid.seek(pointer)
-        (temp['BlockType'],
+        (temp['id'],
          temp['BlockSize'],
          temp['valueRangeKnown'],
          temp['valueRangeMinimum'],

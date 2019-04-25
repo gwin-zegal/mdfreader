@@ -62,8 +62,8 @@ class ImportPlugin(MdfInfo):
 
         if info.mdfversion < 400:
             f = ''
-            f += 'Time: ' + info['HD']['Date'] + ' '
-            f += info['HD']['Time'] + '\n'
+            f += 'Time: ' + info['HD']['hd_start_time_ns'] + ' '
+            f += info['HD']['hd_tz_offset_min'] + '\n'
             f += 'Author: ' + info['HD']['Author'] + '\n'
             f += 'Organisation: ' + info['HD']['Organization'] + '\n'
             f += 'Project Name: ' + info['HD']['ProjectName'] + '\n'

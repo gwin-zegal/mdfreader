@@ -780,9 +780,9 @@ class Record(list):
                 self.channelNames.add(channel.name)
                 self.recordToChannelMatching[channel.name] = channel.name
 
-        if info['CG'][self.dataGroup][self.channelGroup]['cg_invalid_bytes']:  # invalid bytes existing
-            self.CGrecordLength += info['CG'][self.dataGroup][self.channelGroup]['cg_invalid_bytes']
-            self.recordLength += info['CG'][self.dataGroup][self.channelGroup]['cg_invalid_bytes']
+        if info['CG'][self.dataGroup][self.channelGroup]['cg_inval_bytes']:  # invalid bytes existing
+            self.CGrecordLength += info['CG'][self.dataGroup][self.channelGroup]['cg_inval_bytes']
+            self.recordLength += info['CG'][self.dataGroup][self.channelGroup]['cg_inval_bytes']
             invalid_bytes = Channel4()
             invalid_bytes.set_invalid_bytes(info, self.dataGroup, self.channelGroup, channelNumber + 1)
             self.invalid_channel = invalid_bytes
@@ -1449,7 +1449,7 @@ class Mdf4(MdfSkeleton):
         This method is the safest to get channel data as numpy array from 'data' dict key might contain raw data
         """
         if channel_name in self:
-            vector = self.get_channel(channel_name)[dataField]
+            vector = self.get_channel(channel_name)['data']
             if vector is None:  # noDataLoading reading argument flag activated
                 if self.info.fid is None or (self.info.fid is not None and self.info.fid.closed):
                     (self.info.fid, self.info.fileName, self.info.zipfile) = _open_mdf(self.fileName)
@@ -1458,7 +1458,8 @@ class Mdf4(MdfSkeleton):
                 return self._convert_channel_data4(self.get_channel(channel_name), channel_name,
                                                    self.convertTables)[channel_name]
             else:
-                return self.get_channel(channel_name)[dataField]
+                print("ouasi")
+                return self.get_channel(channel_name)['data']
         else:
             return None
 

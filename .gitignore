@@ -20,3 +20,7 @@ __pycache__/
 /dist/
 /*.egg-info
 **/docs/build
+**/build
+**/cython_debug
+*.so
+**/dataRead.c

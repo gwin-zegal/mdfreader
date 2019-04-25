@@ -49,21 +49,23 @@ def data_read(bytes tmp, unsigned short bit_count,
             return read_byte(bit_stream, record_format, number_of_records,
                                 record_byte_size, pos_byte_beg, n_bytes, bit_count, bit_offset)
         elif signal_data_type in (4, 5) and n_bytes == 4:  # float
+            buf = read_float(bit_stream, record_format, number_of_records,
+                             record_byte_size, pos_byte_beg)
             if (byteorder == 'little' and signal_data_type == 4) or \
                     (byteorder == 'big' and signal_data_type == 5):
-                return read_float(bit_stream, record_format, number_of_records,
-                                     record_byte_size, pos_byte_beg, 0)
+                return buf
             else: #  swap bytes
-                return read_float(bit_stream, record_format, number_of_records,
-                                     record_byte_size, pos_byte_beg, 1)
+                return buf.byteswap()
+
         elif signal_data_type in (4, 5) and n_bytes == 8:  # double
+            buf = read_double(bit_stream, record_format, number_of_records,
+                              record_byte_size, pos_byte_beg)
             if (byteorder == 'little' and signal_data_type == 4) or \
                     (byteorder == 'big' and signal_data_type == 5):
-                return read_double(bit_stream, record_format, number_of_records,
-                                      record_byte_size, pos_byte_beg, 0)
+                return buf
             else: #  swap bytes
-                return read_double(bit_stream, record_format, number_of_records,
-                                      record_byte_size, pos_byte_beg, 1)
+                return buf.byteswap()
+
         elif signal_data_type in (0, 1, 13) and n_bytes == 1:  # unsigned char
             return read_unsigned_char(bit_stream, record_format, number_of_records,
                                  record_byte_size, pos_byte_beg, bit_count, bit_offset)
@@ -132,7 +134,7 @@ def data_read(bytes tmp, unsigned short bit_count,
 
 
 cdef inline read_float(const char* bit_stream, str record_format, unsigned long long number_of_records,
-        unsigned long record_byte_size, unsigned long pos_byte_beg, unsigned char swap):
+        unsigned long record_byte_size, unsigned long pos_byte_beg):
     cdef np.ndarray[np.float32_t] buf = np.empty(number_of_records, dtype=record_format)  # return numpy array
     cdef unsigned long long i
     cdef float temp_float = 0
@@ -140,13 +142,10 @@ cdef inline read_float(const char* bit_stream, str record_format, unsigned long 
     for i in range(number_of_records):
         memcpy(&temp_float, &bit_stream[pos_byte_beg + record_byte_size * i], 4)
         buf[i] = temp_float
-    if swap == 0:
-        return buf
-    else:
-        return buf.byteswap()
-    
+    return buf
+
 cdef inline read_double(const char* bit_stream, str record_format, unsigned long long number_of_records,
-        unsigned long record_byte_size, unsigned long pos_byte_beg, unsigned char swap):
+        unsigned long record_byte_size, unsigned long pos_byte_beg):
     cdef np.ndarray[np.float64_t] buf = np.empty(number_of_records, dtype=record_format)  # return numpy array
     cdef unsigned long long i
     cdef double temp_double = 0
@@ -154,10 +153,7 @@ cdef inline read_double(const char* bit_stream, str record_format, unsigned long
     for i in range(number_of_records):
         memcpy(&temp_double, &bit_stream[pos_byte_beg + record_byte_size * i], 8)
         buf[i] = temp_double
-    if swap == 0:
-        return buf
-    else:
-        return buf.byteswap()
+    return buf
     
 cdef inline read_unsigned_char(const char* bit_stream, str record_format, unsigned long long number_of_records,
         unsigned long record_byte_size, unsigned long pos_byte_beg,

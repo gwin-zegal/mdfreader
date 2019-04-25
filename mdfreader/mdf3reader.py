@@ -889,13 +889,13 @@ class Mdf3(MdfSkeleton):
             except:
                 comment = ''
             # converts date to be compatible with ISO8601
-            day, month, year = info['HD']['Date'].split(':')
+            day, month, year = info['HD']['hd_start_time_ns'].split(':')
             ddate = '-'.join([year, month, day])
             self.add_metadata(author=info['HD']['Author'],
                               organisation=info['HD']['Organization'],
                               project=info['HD']['ProjectName'],
                               subject=info['HD']['Subject'], comment=comment,
-                              date=ddate, time=info['HD']['Time'])
+                              date=ddate, time=info['HD']['hd_tz_offset_min'])
 
         data_groups = info['DG']  # parse all data groups
         if self._noDataLoading and channel_list is not None:

@@ -894,7 +894,7 @@ class CGBlock(dict):
          self['cg_path_separator'],
          self['cg_reserved'],
          self['cg_data_bytes'],
-         self['cg_invalid_bytes']) = _CGStruct.unpack(fid.read(104))
+         self['cg_inval_bytes']) = _CGStruct.unpack(fid.read(104))
         if self['cg_md_comment']:  # comments exist
             self['Comment'] = CommentBlock()
             self['Comment'].read_cm_cg(fid=fid, pointer=self['cg_md_comment'])
